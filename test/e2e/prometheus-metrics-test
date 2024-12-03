@@ -109,25 +109,25 @@ fi
 
 
 EXIT_STATUS=1
+cordoned=0
+tainted=0
 for i in $(seq 1 $TAINT_CHECK_CYCLES); do
-      if kubectl get nodes "${CLUSTER_NAME}-worker" | grep SchedulingDisabled; then
-          echo "✅ Verified the worker node was cordoned!"
+    if [[ $cordoned -eq 0 ]] && kubectl get nodes "${CLUSTER_NAME}-worker" | grep SchedulingDisabled; then
+        echo "✅ Verified the worker node was cordoned!"
+        cordoned=1
+    fi
 
-          if kubectl get nodes "${CLUSTER_NAME}-worker" -o json | grep -q "aws-node-termination-handler/spot-itn"; then
-            echo "✅ Verified the worked node was tainted!"
-          else
-            echo "❌ Failed tainting node for spot termination event"
-            EXIT_STATUS=3
-            break
-          fi
+    if [[ $cordoned -eq 1 && $tainted -eq 0 ]] && kubectl get nodes "${CLUSTER_NAME}-worker" -o json | grep -q "aws-node-termination-handler/spot-itn"; then
+        echo "✅ Verified the worked node was tainted!"
+        tainted=1
+    fi
 
-          if [[ $(kubectl get deployments regular-pod-test -o=jsonpath='{.status.unavailableReplicas}') -eq 1 ]]; then
-              echo "✅ Verified the regular-pod-test pod was evicted!"
-              echo "✅ Spot Interruption Test Passed $CLUSTER_NAME! ✅"
-              EXIT_STATUS=0
-              break
-          fi
-      fi
+    if [[ $tainted -eq 1 && $(kubectl get deployments regular-pod-test -o=jsonpath='{.status.unavailableReplicas}') -eq 1 ]]; then
+        echo "✅ Verified the regular-pod-test pod was evicted!"
+        echo "✅ Spot Interruption Test Passed $CLUSTER_NAME! ✅"
+        EXIT_STATUS=0
+        break
+    fi
     echo "Assertion Loop $i/$TAINT_CHECK_CYCLES, sleeping for $TAINT_CHECK_SLEEP seconds"
     sleep $TAINT_CHECK_SLEEP
 done

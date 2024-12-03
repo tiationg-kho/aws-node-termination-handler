@@ -108,8 +108,8 @@ fi
 test_node="${TEST_NODE:-$CLUSTER_NAME-worker}"
 for i in $(seq 1 $TAINT_CHECK_CYCLES); do
     if kubectl get events | tr -s " " | grep "CordonAndDrain node/${test_node} Node successfully cordoned and drained" >/dev/null; then
-        echo "✅ Verified CordonAndDrain was emitted as a k8s event!"
-        echo "✅ K8s Emit Events Test Passed $CLUSTER_NAME! ✅"s
+        echo "✅ Verified CordonAndDrain was emitted as a k8s event! (success event)"
+        echo "✅ K8s Emit Events Test Passed $CLUSTER_NAME! ✅"
         exit 0
     fi
 

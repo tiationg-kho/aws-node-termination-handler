@@ -128,8 +128,9 @@ func New(metadataURL string, tries int) *Service {
 		httpClient: http.Client{
 			Timeout: 2 * time.Second,
 			Transport: &http.Transport{
-				MaxIdleConns:    10,
-				IdleConnTimeout: 30 * time.Second,
+				MaxIdleConns:      10,
+				IdleConnTimeout:   30 * time.Second,
+				DisableKeepAlives: true,
 			},
 		},
 	}
@@ -273,14 +274,13 @@ func (e *Service) Request(contextPath string) (*http.Response, error) {
 			return e.httpClient.Do(req)
 		}
 		resp, err = retry(e.tries, 2*time.Second, httpReq)
-		if err != nil {
-			return nil, fmt.Errorf("Unable to get a response from IMDS: %w", err)
-		}
 		if resp != nil && resp.StatusCode == 401 {
 			e.Lock()
 			e.v2Token = ""
 			e.tokenTTL = 0
 			e.Unlock()
+		} else if err != nil {
+			return nil, fmt.Errorf("Unable to get a response from IMDS: %w", err)
 		} else {
 			break
 		}

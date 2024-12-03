@@ -119,6 +119,9 @@ func (h *Handler) HandleEvent(drainEvent *monitor.InterruptionEvent) error {
 	if (err == nil || (!nodeFound && h.commonHandler.NthConfig.DeleteSqsMsgIfNodeNotFound)) && drainEvent.PostDrainTask != nil {
 		h.commonHandler.RunPostDrainTask(nodeName, drainEvent)
 	}
+	if err != nil {
+		log.Warn().Msgf("There was a problem while trying to handle ITN event: %s", err)
+	}
 	return nil
 }
 
