@@ -1,9 +1,7 @@
 name: Release
 
 on:
-  push:
-    tags:
-      - "v1.*.*"
+  workflow_dispatch:
 
 permissions:
   contents: write # required for uploading releases
@@ -11,9 +9,8 @@ permissions:
 
 env:
   DEFAULT_GO_VERSION: ^1.22.0
-  GITHUB_USERNAME: ${{ secrets.EC2_BOT_GITHUB_USERNAME }}
-  GITHUB_TOKEN: ${{ secrets.EC2_BOT_GITHUB_TOKEN }}
-  WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
+  GITHUB_USERNAME: ${{ secrets.TK_GITHUB_USERNAME }}
+  GITHUB_TOKEN: ${{ secrets.TK_GITHUB_TOKEN }}
 
 jobs:
   releaseLinux:
