@@ -43,7 +43,7 @@ function HandleErrorsAndCleanup {
         Write-Output "`nCleaning up assets uploaded in the current execution of the script"
         foreach ($assetId in $global:AssetIdsUploaded) {
             Write-Output "Deleting asset $assetId"
-            Invoke-RestMethod -Method Delete -Uri "https://api.github.com/repos/aws/aws-node-termination-handler/releases/assets/$assetId" -Headers @{Authorization = "token $env:GITHUB_TOKEN"}
+            Invoke-RestMethod -Method Delete -Uri "https://api.github.com/repos/tiationg-kho/aws-node-termination-handler/releases/assets/$assetId" -Headers @{Authorization = "token $env:GITHUB_TOKEN"}
         }
         exit $ExitCode
     }
@@ -59,7 +59,7 @@ function UploadAsset {
         Authorization = "token $env:GITHUB_TOKEN"
         'Content-Type' = $ContentType
     }
-    $Uri = "https://uploads.github.com/repos/aws/aws-node-termination-handler/releases/$ReleaseId/assets?name=$(Split-Path -Leaf $AssetPath)"
+    $Uri = "https://uploads.github.com/repos/tiationg-kho/aws-node-termination-handler/releases/$ReleaseId/assets?name=$(Split-Path -Leaf $AssetPath)"
     
     try {
         $Response = Invoke-RestMethod -Method Post -Uri $Uri -Headers $Headers -InFile $AssetPath -ErrorAction Stop
@@ -89,7 +89,7 @@ $BinaryDir = "$ScriptPath/../build/bin"
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
 try {
-    $Response = (Invoke-RestMethod -Uri "https://api.github.com/repos/aws/aws-node-termination-handler/releases" -Headers @{Authorization = "token $env:GITHUB_TOKEN"})
+    $Response = (Invoke-RestMethod -Uri "https://api.github.com/repos/tiationg-kho/aws-node-termination-handler/releases" -Headers @{Authorization = "token $env:GITHUB_TOKEN"})
 } catch {
     Write-Output "Failed to retrieve releases from GitHub: $_"
     exit 1
