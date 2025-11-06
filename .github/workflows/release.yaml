@@ -1,7 +1,9 @@
 name: Release
 
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - oidc2
 
 permissions:
   contents: write # required for uploading releases
